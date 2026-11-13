@@ -1,0 +1,1 @@
+import {HomePage} from "@/components/site";import {getAgencies} from "@/lib/store";export const dynamic="force-dynamic";export default async function Home(){return <HomePage listings={await getAgencies()}/>}

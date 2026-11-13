@@ -1,0 +1,6 @@
+import type {Metadata} from "next";import {notFound} from "next/navigation";import {DirectoryPage} from "@/components/site";import {getAgencies} from "@/lib/store";
+export const dynamic="force-dynamic";
+const slug=(s:string)=>s.toLowerCase().replaceAll(" ","-");
+export async function generateStaticParams(){return [...new Map((await getAgencies()).map(a=>{const location=[slug(a.country),slug(a.city)];return [location.join("/"),{location}] as const})).values()]}
+export async function generateMetadata({params}:{params:{location:string[]}}):Promise<Metadata>{const a=(await getAgencies()).find(x=>slug(x.city)===params.location.at(-1));return a?{title:`Digital Marketing Agencies in ${a.city}, ${a.country}`,description:`Discover and compare digital marketing agencies in ${a.city}. Explore services, ratings, and budgets.`,alternates:{canonical:`/digital-marketing-agencies/${params.location.join("/")}`}}:{title:"Location not found"}}
+export default async function LocationPage({params}:{params:{location:string[]}}){const rows=await getAgencies();const a=rows.find(x=>slug(x.city)===params.location.at(-1));if(!a)notFound();return <DirectoryPage city={a.city} country={a.country} listings={rows}/>}
